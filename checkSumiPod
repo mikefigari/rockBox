@@ -1,0 +1,21 @@
+import os
+import hashlib
+
+def calculate_checksum(file_path, algorithm='sha256'):
+    hash_func = hashlib.new(algorithm)
+    with open(file_path, 'rb') as f:
+        while chunk := f.read(8192):
+            hash_func.update(chunk)
+    return hash_func.hexdigest()
+
+def record_checksums(directory, output_file, algorithm='sha256'):
+    with open(output_file, 'w') as f:
+        for root, _, files in os.walk(directory):
+            for file in files:
+                file_path = os.path.join(root, file)
+                checksum = calculate_checksum(file_path, algorithm)
+                f.write(f'{checksum}  {file_path}\n')
+
+# Example usage
+music_files_directory = 'd:\All Music'  # Replace with your music files directory
+record_checksums(music_files_directory, 'Ext_D_checksums.txt')
